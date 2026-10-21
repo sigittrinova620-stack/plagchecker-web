@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pgsd.plagcheker | Similarity Studio & Originality Checker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"></noscript>
+    <script src="/static/pdf.min.js"></script>
+    <style>
+        :root {
+            --turnitin-dark: #831843;
+            --turnitin-header: #be185d;
+            --turnitin-blue: #ec4899;
+            --turnitin-pink: #db2777;
+            --turnitin-pink-light: #fdf2f8;
+            --turnitin-pink-border: #fbcfe8;
+            --sidebar-width: 390px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+        body { background-color: #fff1f5; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
+
+        /* Topbar Feedback Studio Style */
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #fce7f3;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            color: #831843;
+            box-shadow: 0 2px 12px rgba(219, 39, 119, 0.06);
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: #db2777;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .brand-title span.sub {
+            color: #9d174d;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* Topbar Controls */
+        .nav-center-controls {
+            display: none;
+            align-items: center;
+            gap: 14px;
+            background: #fff5f8;
+            padding: 5px 14px;
+            border-radius: 8px;
+            border: 1px solid #fbcfe8;
+        }
+
+        .doc-name-pill {
+            max-width: 280px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #831843;
+        }
+
+        .page-ctrl-btn {
+            background: transparent;
+            border: none;
+            color: #db2777;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 2px 7px;
+            border-radius: 4px;
+            transition: all 0.15s;
+        }
+        .page-ctrl-btn:hover { background: #fce7f3; color: #9d174d; }
+
+        .zoom-ctrls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border-left: 1px solid #fbcfe8;
+            padding-left: 10px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-lembar-hasil {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 0 3px 12px rgba(219, 39, 119, 0.35);
+            transition: all 0.2s;
+        }
+        .btn-lembar-hasil:hover {
+            background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(219, 39, 119, 0.45);
+        }
+
+        .nav-btn-secondary {
+            background: #fff5f8;
+            color: #db2777;
+            border: 1px solid #fbcfe8;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-btn-secondary:hover { background: #fce7f3; color: #be185d; border-color: #f472b6; }
+
+        /* Upload Screen */
+        #uploadSection {
+            max-width: 860px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+        .hero-title { text-align: center; margin-bottom: 36px; }
+        .hero-title h1 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 34px;
+            font-weight: 800;
+            color: #831843;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        .hero-title p { color: #64748b; font-size: 15px; line-height: 1.6; }
+
+        .big-upload-card {
+            background: #ffffff;
+            border: 2px dashed #f472b6;
+            border-radius: 20px;
+            padding: 56px 28px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 10px 30px rgba(244, 114, 182, 0.12);
+        }
+        .big-upload-card:hover {
+            border-color: #db2777;
+            background: #fff8fa;
+            transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(219, 39, 119, 0.18);
+        }
+        .big-upload-card.drag-active {
+            border-color: #db2777;
+            background: #fdf2f8;
+            transform: scale(1.01);
+            box-shadow: 0 16px 40px rgba(219, 39, 119, 0.25);
+        }
+
+        .upload-icon {
+            width: 70px; height: 70px; background: #fdf2f8; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;
+            border: 1px solid #fbcfe8;
+        }
+        .upload-icon svg { width: 34px; height: 34px; stroke: #db2777; }
+
+        .selected-badge {
+            display: none; margin-top: 20px; padding: 12px 20px; background: #fff0f5;
+            border: 1px solid #fbcfe8; border-radius: 10px; font-weight: 700; color: #db2777; font-size: 14px;
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: white; border: none; padding: 15px 44px;
+            border-radius: 12px; font-size: 15.5px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 6px 20px rgba(219, 39, 119, 0.4); margin-top: 28px;
+            transition: all 0.2s;
+        }
+        .btn-check:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(219, 39, 119, 0.55); }
+        .btn-check:disabled { background: #fce7f3; color: #f472b6; cursor: not-allowed; box-shadow: none; border: 1px solid #fbcfe8; }
+
+        /* Workspace Area */
+        #workspaceArea {
+            display: none;
+            height: calc(100vh - 53px);
+            background: #fff0f3;
+        }
+        .workspace-layout {
+            display: flex;
+            height: 100%;
+        }
+
+        .pdf-viewport {
+            flex: 1;
+            overflow-y: auto;
+            background: #fff0f3;
+            padding: 30px 20px 80px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            position: relative;
+        }
+
+        .pdf-page-container {
+            position: relative;
+            background: white;
+            box-shadow: 0 10px 30px rgba(190, 24, 93, 0.12), 0 2px 8px rgba(0,0,0,0.06);
+            border-radius: 3px;
+            line-height: 0;
+            transition: transform 0.2s ease;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        /* PDF.js Text Layer (Selectable & Copyable Text + Native Highlighting) */
+        .textLayer {
+            position: absolute;
+            text-align: initial;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            opacity: 1;
+            line-height: 1;
+            text-size-adjust: none;
+            forced-color-adjust: none;
+            transform-origin: 0 0;
+            z-index: 4;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .textLayer span, .textLayer br {
+            color: transparent;
+            position: absolute;
+            white-space: pre;
+            cursor: text;
+            transform-origin: 0% 0%;
+        }
+
+        .turnitin-highlight-layer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 2;
+            overflow: visible;
+        }
+
+        .turnitin-highlight-bar {
+            position: absolute;
+            border-radius: 0 !important;
+            pointer-events: none;
+            box-sizing: border-box;
+            z-index: 2;
+        }
+
+        .turnitin-pin-badge {
+            position: absolute !important;
+            color: #ffffff !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            font-size: 8.5px !important;
+            font-weight: 800 !important;
+            line-height: 12px !important;
+            height: 12px !important;
+            min-width: 14px !important;
+            padding: 0 3px !important;
+            border-radius: 2px 2px 0 0 !important;
+            text-align: center !important;
+            pointer-events: none !important;
+            z-index: 10 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+        }
+
+        .textLayer ::selection {
+            background: rgba(37, 99, 235, 0.35) !important;
+            color: transparent !important;
+        }
+
+        .textLayer ::-moz-selection {
+            background: rgba(37, 99, 235, 0.35) !important;
+            color: transparent !important;
+        }
+
+        .textLayer .endOfContent {
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 100%;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            cursor: default;
+            user-select: none;
+        }
+
+        /* Match Overview Sidebar (Official Feedback Studio) */
+        .match-sidebar {
+            width: var(--sidebar-width);
+            background: #ffffff;
+            border-left: 1px solid #fbcfe8;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -6px 0 24px rgba(219, 39, 119, 0.08);
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #fbcfe8;
+            background: #fff5f8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-title-group h2 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #831843;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sidebar-title-group span {
+            font-size: 12px;
+            color: #9d174d;
+            font-weight: 500;
+        }
+
+        /* Big Turnitin Score Box in Sidebar */
+        .sidebar-score-card {
+            background: #ffffff;
+            padding: 16px 20px;
+            border-bottom: 1px solid #fbcfe8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .big-sim-badge {
+            width: 72px;
+            height: 72px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            box-shadow: 0 4px 16px rgba(219, 39, 119, 0.2);
+        }
+        .big-sim-badge .pct-num { font-size: 26px; line-height: 1; }
+        .big-sim-badge .pct-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; margin-top: 3px; }
+
+        .score-pills-col {
+            flex: 1;
+            margin-left: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .score-pill-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #831843;
+        }
+        .score-pill-row b { color: #db2777; font-weight: 700; }
+
+        /* Sources List */
+        .sources-filter-bar {
+            padding: 10px 18px;
+            background: #fff5f8;
+            border-bottom: 1px solid #fbcfe8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 700;
+            color: #831843;
+        }
+
+        .sidebar-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .source-card {
+            border: 1px solid #fce7f3;
+            border-radius: 8px;
+            padding: 12px 14px;
+            cursor: pointer;
+            background: #ffffff;
+            transition: all 0.18s ease;
+        }
+        .source-card:hover {
+            border-color: #ec4899;
+            background: #fff5f8;
+            transform: translateX(-2px);
+            box-shadow: 0 3px 10px rgba(219, 39, 119, 0.08);
+        }
+
+        .source-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .source-tag {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            flex: 1;
+        }
+
+        .source-badge {
+            min-width: 22px;
+            height: 22px;
+            border-radius: 5px;
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1px;
+        }
+
+        .source-title-text { line-height: 1.35; }
+        .source-pct { font-size: 14px; font-weight: 800; color: #831843; white-space: nowrap; }
+
+        .source-meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            padding-left: 32px;
+            font-size: 11.5px;
+        }
+        .source-domain { color: #db2777; font-weight: 600; }
+        .source-type-pill {
+            color: #9d174d; background: #fdf2f8; padding: 2px 6px;
+            border-radius: 4px; font-size: 10px; font-weight: 600; border: 1px solid #fce7f3;
+        }
+
+        /* MODAL LEMBAR HASIL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(131, 24, 67, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 30px 15px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .modal-sheet-container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 980px;
+            border-radius: 16px;
+            box-shadow: 0 25px 60px rgba(131, 24, 67, 0.3);
+            overflow: hidden;
+            margin: 0 auto 50px auto;
+        }
+
+        .modal-top-bar {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* PRINTABLE SHEETS */
+        .printable-sheet {
+            background: white;
+            padding: 24px 28px;
+            color: #0f172a;
+            display: none;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+        .printable-sheet.active { display: block; }
+
+        /* AUTHENTIC MULTI-PAGE REPORT TEMPLATE STYLES */
+        .ithenticate-sheet-page {
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 30px 36px;
+            margin-bottom: 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 250mm;
+        }
+
+        .ithenticate-sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 8px;
+            margin-bottom: 18px;
+            font-size: 11px;
+            color: #64748b;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .header-left, .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .header-logo-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .header-brand-name {
+            font-weight: 800;
+            color: #0f172a;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 12.5px;
+        }
+
+        .header-page-tag {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 500;
+            margin-left: 6px;
+        }
+
+        .header-right, .footer-right {
+            font-size: 10.5px;
+            color: #64748b;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        .ithenticate-sheet-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 10px;
+            margin-top: 18px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .ithenticate-sheet-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #report-page-1 {
+            min-height: 250mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #report-page-1 .ithenticate-sheet-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 35mm;
+            padding-bottom: 25mm;
+        }
+
+        /* PAGE 1: COVER DETAILS */
+        .doc-main-title {
+            font-size: 21px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.35;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .doc-title-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin-bottom: 18px;
+        }
+
+        .doc-section-heading {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 14px;
+        }
+
+        .doc-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 220px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .doc-details-left {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .detail-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .detail-val {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .detail-val.mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11.5px;
+            color: #475569;
+        }
+        .detail-val.wrap {
+            word-break: break-all;
+        }
+
+        .doc-details-right-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .doc-details-right-card .stat-item {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        /* PAGE 2: OVERALL SIMILARITY & INTEGRITY FLAGS */
+        .overall-sim-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        .overall-sim-sub {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 16px;
+        }
+
+        .section-divider-line {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 14px 0;
+        }
+
+        .sub-section-title {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .filter-item-line {
+            font-size: 11.5px;
+            color: #334155;
+            padding-left: 4px;
+        }
+
+        .top-sources-summary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            color: #334155;
+        }
+
+        .src-summary-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .src-summary-item b {
+            min-width: 26px;
+            color: #0f172a;
+        }
+
+        .integrity-flags-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 18px;
+            align-items: start;
+            margin-top: 6px;
+        }
+
+        .flags-count-title {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 3px;
+        }
+
+        .flags-count-sub {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .flags-right-callout {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 10.5px;
+            color: #1e3a8a;
+            line-height: 1.5;
+        }
+
+        /* PAGE 3 & 4: TOP SOURCES LIST */
+        .top-sources-note {
+            font-size: 10.5px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .top-sources-table-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .source-list-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 7px 0;
+            border-bottom: 1px dotted #e2e8f0;
+        }
+        .source-list-row:last-child {
+            border-bottom: none;
+        }
+
+        .source-row-left {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+            padding-right: 14px;
+        }
+
+        .source-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 1.5px 8px 1.5px 2px;
+            border-radius: 14px;
+            width: fit-content;
+        }
+
+        .source-num-badge {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            line-height: 15px;
+            text-align: center;
+            border-radius: 50%;
+            color: white;
+            font-size: 8.5px;
+            font-weight: 800;
+        }
+
+        .source-type-text {
+            font-size: 9.5px;
+            font-weight: 700;
+        }
+
+        .source-row-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1e293b;
+            word-break: break-all;
+            line-height: 1.3;
+        }
+
+        .source-row-pct {
+            font-size: 12px;
+            font-weight: 800;
+            color: #0f172a;
+            white-space: nowrap;
+        }
+
+        /* LEMBAR CUPLIKAN NASKAH BER-STABILO */
+        .report-manuscript-page {
+            margin-bottom: 24px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            overflow: hidden;
+            padding: 16px 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .report-manuscript-page .ithenticate-sheet-header {
+            width: 100%;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+        }
+
+        .report-canvas-wrapper {
+            width: 100%;
+            line-height: 0;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        .report-page-box {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+            margin: 0 auto;
+            user-select: text;
+            -webkit-user-select: text;
+            flex-shrink: 0;
+        }
+
+        .report-page-box canvas,
+        .report-page-box img {
+            display: block;
+            margin: 0 auto;
+            pointer-events: none;
+        }
+
+        .report-page-box .textLayer {
+            position: absolute;
+            text-align: initial;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            opacity: 1;
+            line-height: 1;
+            text-size-adjust: none;
+            forced-color-adjust: none;
+            transform-origin: 0 0;
+            z-index: 4;
+            pointer-events: auto !important;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        .report-page-box .textLayer span,
+        .report-page-box .textLayer br {
+            color: transparent !important;
+            position: absolute;
+            white-space: pre;
+            cursor: text;
+            transform-origin: 0% 0%;
+            pointer-events: auto !important;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        .report-page-box .textLayer ::selection,
+        .report-manuscript-page .textLayer ::selection {
+            background: rgba(37, 99, 235, 0.35) !important;
+            color: transparent !important;
+        }
+
+        .report-page-box .textLayer ::-moz-selection,
+        .report-manuscript-page .textLayer ::-moz-selection {
+            background: rgba(37, 99, 235, 0.35) !important;
+            color: transparent !important;
+        }
+
+        /* Loading */
+        .loading-modal {
+            display: none; position: fixed; inset: 0; background: rgba(131, 24, 67, 0.45);
+            backdrop-filter: blur(4px);
+            z-index: 3000; align-items: center; justify-content: center;
+        }
+        .loading-card {
+            background: #ffffff; border: 1px solid #fbcfe8; border-radius: 20px;
+            padding: 40px; text-align: center; width: 90%; max-width: 440px; box-shadow: 0 20px 50px rgba(219, 39, 119, 0.15);
+        }
+        .spinner {
+            width: 48px; height: 48px; border: 4px solid #fce7f3; border-top: 4px solid #db2777;
+            border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* PRINT STYLES */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            html, body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 210mm !important;
+                height: auto !important;
+            }
+            .navbar, #uploadSection, #workspaceArea, .modal-top-bar, .no-print {
+                display: none !important;
+            }
+            .modal-overlay {
+                position: static !important;
+                background: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+                inset: auto !important;
+            }
+            .modal-sheet-container {
+                box-shadow: none !important;
+                border: none !important;
+                max-width: 100% !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 210mm !important;
+                background: #ffffff !important;
+            }
+            .printable-sheet.active {
+                display: block !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 210mm !important;
+            }
+            .ithenticate-sheet-page {
+                page-break-before: avoid !important;
+                break-before: avoid !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                max-height: 297mm !important;
+                padding: 10mm 14mm !important;
+                margin: 0 !important;
+                box-sizing: border-box !important;
+                border: none !important;
+                box-shadow: none !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                overflow: hidden !important;
+            }
+            #report-page-1 {
+                page-break-before: avoid !important;
+                break-before: avoid !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                max-height: 297mm !important;
+                box-sizing: border-box !important;
+                padding: 12mm 14mm !important;
+                overflow: hidden !important;
+            }
+            #report-page-1 .ithenticate-sheet-content {
+                flex: 1 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                padding-top: 30mm !important;
+                padding-bottom: 20mm !important;
+            }
+            .ithenticate-sheet-page.hidden-page, #report-page-4.hidden-page, .hidden-page {
+                display: none !important;
+            }
+            .report-manuscript-page {
+                page-break-before: avoid !important;
+                break-before: avoid !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                border: none !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 8mm 12mm !important;
+                width: 210mm !important;
+                box-sizing: border-box !important;
+                height: 297mm !important;
+                max-height: 297mm !important;
+                overflow: hidden !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: flex-start !important;
+                align-items: center !important;
+            }
+            .report-manuscript-page:last-child {
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+            }
+            .report-manuscript-page .ithenticate-sheet-header {
+                width: 100% !important;
+                margin: 0 0 3mm 0 !important;
+                padding: 0 0 2mm 0 !important;
+                border-bottom: 1px solid #cbd5e1 !important;
+                font-size: 8pt !important;
+                color: #64748b !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                flex-shrink: 0 !important;
+            }
+            .report-canvas-wrapper {
+                flex: 1 !important;
+                width: 100% !important;
+                height: 270mm !important;
+                max-height: 270mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: flex-start !important;
+                overflow: hidden !important;
+            }
+            .report-page-box {
+                margin: 0 auto !important;
+                display: block !important;
+                position: relative !important;
+                line-height: 0 !important;
+                transform-origin: top center !important;
+                transform: scale(var(--print-scale, 0.86)) !important;
+            }
+            .report-page-box canvas,
+            .report-page-box img {
+                display: block !important;
+                margin: 0 auto !important;
+                border: none !important;
+                box-shadow: none !important;
+                pointer-events: none !important;
+            }
+            .report-page-box .turnitin-highlight-layer {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                pointer-events: none !important;
+                z-index: 2 !important;
+            }
+            .report-page-box .turnitin-highlight-bar {
+                display: block !important;
+                position: absolute !important;
+                border-radius: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-page-box .turnitin-pin-badge {
+                display: inline-flex !important;
+                position: absolute !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-page-box .textLayer {
+                display: block !important;
+                position: absolute !important;
+                text-align: initial !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                overflow: hidden !important;
+                opacity: 1 !important;
+                line-height: 1 !important;
+                pointer-events: auto !important;
+                user-select: text !important;
+                -webkit-user-select: text !important;
+                z-index: 4 !important;
+            }
+            .report-page-box .textLayer span,
+            .report-page-box .textLayer br {
+                color: transparent !important;
+                position: absolute !important;
+                white-space: pre !important;
+                cursor: text !important;
+                transform-origin: 0% 0% !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header Navbar Feedback Studio -->
+    <header class="navbar">
+        <div class="brand-section">
+            <div class="brand-title">
+                <span>pgsd.plagcheker</span>
+                <span class="sub">| Similarity Studio</span>
+            </div>
+        </div>
+
+
+        <!-- Center Controls -->
+        <div class="nav-center-controls" id="centerNav">
+            <div class="doc-name-pill" id="navDocName">Dokumen.pdf</div>
+            <div style="display:flex; align-items:center; gap:4px; font-size:12px; color:#9d174d;">
+                <button class="page-ctrl-btn" onclick="prevPage()">◀</button>
+                <span id="pageIndicator">Page 1 / 1</span>
+                <button class="page-ctrl-btn" onclick="nextPage()">▶</button>
+            </div>
+        </div>
+
+        <div class="nav-actions">
+            <button class="btn-lembar-hasil" id="btnBukaLembar" onclick="downloadLembarHasil()" style="display:none;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Download Lembar Hasil</span>
+            </button>
+            <button class="nav-btn-secondary" onclick="resetToUpload()">+ Pindai Baru</button>
+        </div>
+    </header>
+
+    <!-- Upload Section -->
+    <div id="uploadSection">
+        <div class="hero-title">
+            <h1>pgsd.plagcheker</h1>
+            <p>Pemeriksaan keaslian karya ilmiah, skripsi, dan tesis.</p>
+        </div>
+
+
+        <div class="big-upload-card" id="dropCard" onclick="triggerFileInput()">
+            <div class="upload-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+            </div>
+            <h2 style="font-size: 21px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">Pilih atau Tarik Berkas PDF atau Word Disini</h2>
+            <p style="color: #64748b; font-size: 14px;">Mendukung file format .word dan .pdf</p>
+            <input type="file" id="fileInput" accept=".pdf,.docx,.doc" style="display:none;" onchange="onFileChosen(event)">
+            <div class="selected-badge" id="fileBadge"></div>
+        </div>
+
+        <div style="text-align: center;">
+            <button class="btn-check" id="checkBtn" onclick="startCheck()" disabled>Mulai Pemeriksaan Dokumen</button>
+        </div>
+    </div>
+
+    <!-- Feedback Studio Workspace Area -->
+    <div id="workspaceArea">
+        <div class="workspace-layout">
+            <!-- Left: Exact PDF Canvas -->
+            <div class="pdf-viewport" id="pdfContainer"></div>
+
+            <!-- Right: Match Overview Sidebar (Official Turnitin Style) -->
+            <div class="match-sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-title-group">
+                        <h2>Match Overview</h2>
+                        <span id="sourcesCountText">Sumber Serupa Terdeteksi</span>
+                    </div>
+                </div>
+
+                <!-- Big Turnitin Score Box -->
+                <div class="sidebar-score-card">
+                    <div class="big-sim-badge" id="badgeContainer" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);">
+                        <span class="pct-num" id="sidebarScoreVal">0%</span>
+                        <span class="pct-lbl">Similarity</span>
+                    </div>
+                    <div class="score-pills-col">
+                        <div class="score-pill-row">
+                            <span style="display:inline-flex; align-items:center; gap:6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                                Internet Sources:
+                            </span>
+                            <b id="sideNetScore">0%</b>
+                        </div>
+                        <div class="score-pill-row">
+                            <span style="display:inline-flex; align-items:center; gap:6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                                Publications:
+                            </span>
+                            <b id="sidePubScore">0%</b>
+                        </div>
+                        <div class="score-pill-row">
+                            <span style="display:inline-flex; align-items:center; gap:6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                                Student Papers:
+                            </span>
+                            <b id="sideStuScore">0%</b>
+                        </div>
+                        <div class="score-pill-row" style="margin-top:2px; padding-top:4px; border-top:1px dashed #fce7f3;">
+                            <span style="color:#831843;">Total Kata:</span>
+                            <b id="sideWordCount" style="color:#db2777;">0</b>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sources-filter-bar">
+                    <span>PRIMARY SOURCES</span>
+                    <span style="font-size:11.5px; color:#db2777; cursor:pointer; font-weight:700;" onclick="openLembarModal()">Buka Lembar Hasil</span>
+                </div>
+
+                <!-- Sources List -->
+                <div class="sidebar-list" id="sourcesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LEMBAR HASIL RESMI -->
+    <div class="modal-overlay" id="lembarModal">
+        <div class="modal-sheet-container">
+            <!-- Modal Header -->
+            <div class="modal-top-bar no-print">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <h3 style="font-size:16px; font-weight:800;">Lembar Hasil</h3>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button class="btn-lembar-hasil" onclick="window.print()" style="padding:7px 18px; font-size:13px;">
+                        Unduh Lembar Hasil
+                    </button>
+                    <button class="nav-btn-secondary" onclick="closeLembarModal()" style="padding:6px 12px;">✕ Tutup</button>
+                </div>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- TEMPLATE: PGSD.PLAGCHEKER REPORT (COVER + OVERVIEW + CUPLIKAN) -->
+            <!-- ============================================================== -->
+            <div class="printable-sheet active" id="sheet-report">
+                
+                <!-- LEMBAR AWAL (COVER MATCH OVERVIEW) -->
+                <!-- LEMBAR 1: COVER PAGE (DOCUMENT DETAILS) -->
+                <div class="ithenticate-sheet-page" id="report-page-1">
+                    <div class="ithenticate-sheet-header">
+                        <div class="header-left">
+                            <svg class="header-logo-icon" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span class="header-brand-name">pgsd.plagcheker</span>
+                            <span class="header-page-tag" id="repHeaderPageTag1">Page 1 of 17 • Cover Page</span>
+                        </div>
+                        <div class="header-right">
+                            <span id="repHeaderSubMeta1">Submission ID: 2148923019 • 19-Oct-2026</span>
+                        </div>
+                    </div>
+
+                    <div class="ithenticate-sheet-content">
+                        <h1 id="repDocTitle" class="doc-main-title">Proposal Penelitian</h1>
+                        <div class="doc-title-divider"></div>
+
+                        <div class="doc-section-heading">Document Details</div>
+
+                        <div class="doc-details-grid">
+                            <div class="doc-details-left">
+                                <div class="detail-row">
+                                    <span class="detail-label">Submission ID</span>
+                                    <span class="detail-val mono" id="repSubId">2148923019</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Submission Date</span>
+                                    <span class="detail-val" id="repDateText">Jul 11, 2024, 8:50 PM GMT+7</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Download Date</span>
+                                    <span class="detail-val" id="repDownloadDate">Jul 11, 2024, 8:50 PM GMT+7</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">File Name</span>
+                                    <span class="detail-val wrap" id="repFileName">Proposal.pdf</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">File Size</span>
+                                    <span class="detail-val" id="repFileSizeText">1.11 MB</span>
+                                </div>
+                            </div>
+
+                            <div class="doc-details-right-card">
+                                <div class="stat-item"><span id="repPageCountText">17</span> Pages</div>
+                                <div class="stat-item"><span id="repWordText">3,457</span> Words</div>
+                                <div class="stat-item"><span id="repCharText">22,514</span> Characters</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ithenticate-sheet-footer">
+                        <div class="footer-left">
+                            <svg class="header-logo-icon" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span class="header-brand-name">pgsd.plagcheker</span>
+                            <span class="header-page-tag" id="repFooterPageTag1">Page 1 of 17 • Cover Page</span>
+                        </div>
+                        <div class="footer-right">
+                            <span id="repFooterSubMeta1">Submission ID: 2148923019</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEMBAR 2: OVERALL SIMILARITY & INTEGRITY FLAGS -->
+                <div class="ithenticate-sheet-page" id="report-page-2">
+                    <div class="ithenticate-sheet-header">
+                        <div class="header-left">
+                            <svg class="header-logo-icon" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span class="header-brand-name">pgsd.plagcheker</span>
+                            <span class="header-page-tag" id="repHeaderPageTag2">Page 2 of 17 • Integrity Overview</span>
+                        </div>
+                        <div class="header-right">
+                            <span id="repHeaderSubMeta2">Submission ID: 2148923019 • 19-Oct-2026</span>
+                        </div>
+                    </div>
+
+                    <div class="ithenticate-sheet-content">
+                        <div class="overall-sim-title">
+                            <span id="repScoreVal">7%</span> Overall Similarity
+                        </div>
+                        <div class="overall-sim-sub">
+                            The combined total of all matches, including overlapping sources, for each database.
+                        </div>
+
+                        <div class="section-divider-line"></div>
+
+                        <div class="sub-section-title">Filtered from the Report</div>
+                        <div class="filter-item-line">• Bibliography</div>
+
+                        <div class="section-divider-line"></div>
+
+                        <div class="sub-section-title">Top Sources</div>
+                        <div class="top-sources-summary-list">
+                            <div class="src-summary-item"><b id="repNetScore">5%</b> <span>🌐 Internet sources</span></div>
+                            <div class="src-summary-item"><b id="repPubScore">3%</b> <span>📖 Publications</span></div>
+                            <div class="src-summary-item"><b id="repStuScore">2%</b> <span>👤 Submitted works (Student Papers)</span></div>
+                        </div>
+
+                        <div class="section-divider-line"></div>
+
+                        <div class="sub-section-title">Integrity Flags</div>
+                        <div class="integrity-flags-grid">
+                            <div class="flags-left">
+                                <div class="flags-count-title">0 Integrity Flags for Review</div>
+                                <div class="flags-count-sub">No suspected text manipulations found</div>
+                            </div>
+                            <div class="flags-right-callout">
+                                <div>Our system's algorithm checks for any hidden text, character manipulation, or anomalous patterns, providing confidence in the integrity of the submitted work.</div>
+                                <div style="margin-top: 8px;">0 flags is an indication of standard academic writing formatting. Click and review details for further notes.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ithenticate-sheet-footer">
+                        <div class="footer-left">
+                            <svg class="header-logo-icon" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span class="header-brand-name">pgsd.plagcheker</span>
+                            <span class="header-page-tag" id="repFooterPageTag2">Page 2 of 17 • Integrity Overview</span>
+                        </div>
+                        <div class="footer-right">
+                            <span id="repFooterSubMeta2">Submission ID: 2148923019</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEMBAR 3: TOP SOURCES BREAKDOWN (PART 1, SOURCES 1 - 10) -->
+                <div class="ithenticate-sheet-page" id="report-page-3">
+                    <div class="ithenticate-sheet-header">
+                        <div class="header-left">
+                            <svg class="header-logo-icon" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span class="header-brand-name">pgsd.plagcheker</span>
+                            <span class="header-page-tag" id="repHeaderPageTag3">Page 3 of 17 • Integrity Overview</span>
+                        </div>
+                        <div class="header-right">
+                            <span id="repHeaderSubMeta3">Submission ID: 2148923019 • 19-Oct-2026</span>
+                        </div>
+                    </div>
+
+                    <div class="ithenticate-sheet-content">
+                        <div class="sub-section-title" style="margin-bottom: 6px;">Top Sources</div>
+                        <div class="top-sources-summary-list" style="margin-bottom: 12px;">
+                            <div class="src-summary-item"><b id="repNetScore2">5%</b> <span>🌐 Internet sources</span></div>
+                            <div class="src-summary-item"><b id="repPubScore2">3%</b> <span>📖 Publications</span></div>
+                            <div class="src-summary-item"><b id="repStuScore2">2%</b> <span>👤 Submitted works (Student Papers)</span></div>
+                        </div>
+
+                        <div class="section-divider-line" style="margin: 8px 0 12px 0;"></div>
+
+                        <div class="sub-section-title" style="margin-bottom: 2px;">Top Sources</div>
+                        <div class="top-sources-note">
+                            The sources with the highest number of matches within the submission. Overlapping sources are not displayed.
+                        </div>
+
+                        <div class="top-sources-table-list" id="repSourcesListP3"></div>
+                    </div>
+
+                    <div class="ithenticate-sheet-footer">
+                        <div class="footer-left">
+                            <svg class="header-logo-icon" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span class="header-brand-name">pgsd.plagcheker</span>
+                            <span class="header-page-tag" id="repFooterPageTag3">Page 3 of 17 • Integrity Overview</span>
+                        </div>
+                        <div class="footer-right">
+                            <span id="repFooterSubMeta3">Submission ID: 2148923019</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEMBAR 4: TOP SOURCES BREAKDOWN (PART 2, SOURCES 11+ - JIKA SUMBER BANYAK) -->
+                <div class="ithenticate-sheet-page hidden-page" id="report-page-4" style="display:none;">
+                    <div class="ithenticate-sheet-header">
+                        <div class="header-left">
+                            <svg class="header-logo-icon" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span class="header-brand-name">pgsd.plagcheker</span>
+                            <span class="header-page-tag" id="repHeaderPageTag4">Page 4 of 17 • Integrity Overview</span>
+                        </div>
+                        <div class="header-right">
+                            <span id="repHeaderSubMeta4">Submission ID: 2148923019 • 19-Oct-2026</span>
+                        </div>
+                    </div>
+
+                    <div class="ithenticate-sheet-content">
+                        <div class="sub-section-title" style="margin-bottom: 2px;">Top Sources (Continued)</div>
+                        <div class="top-sources-note">
+                            The sources with the highest number of matches within the submission. Overlapping sources are not displayed.
+                        </div>
+
+                        <div class="top-sources-table-list" id="repSourcesListP4"></div>
+                    </div>
+
+                    <div class="ithenticate-sheet-footer">
+                        <div class="footer-left">
+                            <svg class="header-logo-icon" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span class="header-brand-name">pgsd.plagcheker</span>
+                            <span class="header-page-tag" id="repFooterPageTag4">Page 4 of 17 • Integrity Overview</span>
+                        </div>
+                        <div class="footer-right">
+                            <span id="repFooterSubMeta4">Submission ID: 2148923019</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEMBAR KEDUA DST: CUPLIKAN NASKAH LENGKAP DENGAN STABILO PLAGIASI -->
+                <div id="reportPagesContainer"></div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="loading-modal" id="loadingModal">
+        <div class="loading-card">
+            <div class="spinner"></div>
+            <h3 style="font-size: 19px; font-weight: 700; color: #831843; margin-bottom: 8px;">Menganalisis Dokumen...</h3>
+            <p style="font-size: 14px; color: #9d174d; line-height: 1.5;">Memeriksa indeks kemiripan dengan repository akademik nasional, publikasi ilmiah, dan internet.</p>
+        </div>
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '/static/pdf.worker.min.js';
+        let selectedFile = null;
+        let currentReportData = null;
+        let currentScale = 1.35;
+        let currentPageNum = 1;
+        let totalPdfPages = 1;
+        let renderedCanvasPages = [];
+
+        function triggerFileInput() {
+            const fi = document.getElementById('fileInput');
+            if (fi) {
+                fi.value = '';
+                fi.click();
+            }
+        }
+
+        function handleSelectedFile(file) {
+            if (!file) return;
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!['pdf', 'docx', 'doc'].includes(ext)) {
+                alert("Format berkas tidak didukung. Harap unggah berkas .pdf, .docx, atau .doc.");
+                return;
+            }
+            selectedFile = file;
+            const badge = document.getElementById('fileBadge');
+            if (badge) {
+                badge.style.display = 'block';
+                const sizeStr = (selectedFile.size > 1024 * 1024) 
+                    ? `${(selectedFile.size / (1024 * 1024)).toFixed(2)} MB`
+                    : `${(selectedFile.size / 1024).toFixed(1)} KB`;
+                badge.innerText = `📄 ${selectedFile.name} (${sizeStr})`;
+            }
+            const btn = document.getElementById('checkBtn');
+            if (btn) btn.disabled = false;
+        }
+
+        function onFileChosen(e) {
+            if (e.target && e.target.files && e.target.files.length > 0) {
+                handleSelectedFile(e.target.files[0]);
+            }
+        }
+
+        // Setup Drag & Drop handlers
+        window.addEventListener('DOMContentLoaded', () => {
+            const dropCard = document.getElementById('dropCard');
+            if (dropCard) {
+                ['dragenter', 'dragover'].forEach(evName => {
+                    dropCard.addEventListener(evName, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropCard.classList.add('drag-active');
+                    });
+                });
+                ['dragleave', 'dragend'].forEach(evName => {
+                    dropCard.addEventListener(evName, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropCard.classList.remove('drag-active');
+                    });
+                });
+                dropCard.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropCard.classList.remove('drag-active');
+                    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        handleSelectedFile(e.dataTransfer.files[0]);
+                    }
+                });
+            }
+        });
+
+        function resetToUpload() {
+            selectedFile = null;
+            currentReportData = null;
+            document.getElementById('fileInput').value = "";
+            document.getElementById('fileBadge').style.display = 'none';
+            document.getElementById('checkBtn').disabled = true;
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('workspaceArea').style.display = 'none';
+            document.getElementById('centerNav').style.display = 'none';
+            document.getElementById('btnBukaLembar').style.display = 'none';
+            const repCont = document.getElementById('reportPagesContainer');
+            if (repCont) {
+                repCont.querySelectorAll('canvas').forEach(c => {
+                    c.width = 0;
+                    c.height = 0;
+                });
+                repCont.innerHTML = "";
+                repCont.dataset.renderedSubId = "";
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function startCheck() {
+            if (!selectedFile) return;
+
+            document.getElementById('loadingModal').style.display = 'flex';
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const res = await fetch('/api/check', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (data.error) {
+                    alert("Error: " + data.error);
+                    return;
+                }
+
+                currentReportData = data;
+                displayTurnitinFeedbackStudio(data);
+            } catch (err) {
+                alert("Gagal memproses dokumen: " + err);
+            } finally {
+                document.getElementById('loadingModal').style.display = 'none';
+            }
+        }
+
+        function getScoreBadgeColor(score) {
+            if (score < 25) return 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)';
+            if (score < 50) return 'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)';
+            return 'linear-gradient(135deg, #be123c 0%, #9f1239 100%)';
+        }
+
+        function hexToRgba(hex, alpha) {
+            if (!hex) return `rgba(219, 39, 119, ${alpha})`;
+            if (hex.startsWith('rgba')) return hex;
+            if (hex.startsWith('rgb(')) return hex.replace('rgb(', 'rgba(').replace(')', `, ${alpha})`);
+            let c = hex.replace('#', '');
+            if (c.length === 3) c = c.split('').map(x => x + x).join('');
+            const r = parseInt(c.substring(0, 2), 16) || 219;
+            const g = parseInt(c.substring(2, 4), 16) || 39;
+            const b = parseInt(c.substring(4, 6), 16) || 119;
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function downloadLembarHasil() {
+            if (!currentReportData) {
+                alert("Dokumen belum selesai diperiksa.");
+                return;
+            }
+            populateReportManuscriptPages();
+            document.getElementById('lembarModal').style.display = 'flex';
+            setTimeout(() => {
+                window.print();
+            }, 250);
+        }
+
+        async function displayTurnitinFeedbackStudio(data) {
+            try {
+                // Immediately sync all Lembar Hasil data so it never shows old/placeholder details
+                syncLembarHasilData(data);
+
+                document.getElementById('uploadSection').style.display = 'none';
+                document.getElementById('workspaceArea').style.display = 'block';
+                document.getElementById('centerNav').style.display = 'flex';
+                document.getElementById('btnBukaLembar').style.display = 'flex';
+
+                const elNavDoc = document.getElementById('navDocName');
+                if (elNavDoc) elNavDoc.innerText = data.filename;
+
+                const elScore = document.getElementById('sidebarScoreVal');
+                if (elScore) elScore.innerText = `${data.similarity_score}%`;
+
+                const badgeCont = document.getElementById('badgeContainer');
+                if (badgeCont) badgeCont.style.background = getScoreBadgeColor(data.similarity_score);
+
+                const elSideNet = document.getElementById('sideNetScore');
+                if (elSideNet) elSideNet.innerText = `${data.internet_sources_pct}%`;
+
+                const elSidePub = document.getElementById('sidePubScore');
+                if (elSidePub) elSidePub.innerText = `${data.publications_pct}%`;
+
+                const elSideStu = document.getElementById('sideStuScore');
+                if (elSideStu) elSideStu.innerText = `${data.student_papers_pct}%`;
+
+                const elSideWord = document.getElementById('sideWordCount');
+                if (elSideWord) elSideWord.innerText = (data.total_words || 0).toLocaleString();
+
+                const elSrcCount = document.getElementById('sourcesCountText');
+                if (elSrcCount) elSrcCount.innerText = `${(data.sources || []).length} Sumber Utama Ditemukan`;
+
+                // Populate Sidebar Sources
+                const listEl = document.getElementById('sourcesList');
+                if (listEl && data.sources) {
+                    listEl.innerHTML = data.sources.map(s => `
+                        <div class="source-card" onclick="highlightSource(${s.source_num})">
+                            <div class="source-top">
+                                <div class="source-tag">
+                                    <div class="source-badge" style="background-color: ${s.color.solid};">${s.source_num}</div>
+                                    <div class="source-title-text" title="${s.title}">${s.title}</div>
+                                </div>
+                                <div class="source-pct">${s.similarity_pct}</div>
+                            </div>
+                            <div class="source-meta-row">
+                                <span class="source-domain">${s.source_name}</span>
+                                <span class="source-type-pill">${s.type}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Render PDF Viewport with highlights
+                await renderPdfPages(data.pdf_url, data.page_matches);
+
+                // Update page tags with exact total page count
+                const hasP4 = data.sources && data.sources.length > 10;
+                const numOverviewPages = hasP4 ? 4 : 3;
+                updateOverviewPageTags(numOverviewPages + totalPdfPages, hasP4);
+
+                // Populate Lembar Hasil pages directly so they are immediately available
+                populateReportManuscriptPages();
+            } catch (err) {
+                console.error("Error in displayTurnitinFeedbackStudio:", err);
+            }
+        }
+
+        let currentSubId = "2148923019";
+        let currentShortDate = "19-Oct-2026";
+        let currentFullDateTime = "Jul 11, 2024, 8:50 PM GMT+7";
+
+        function renderSourceItemHtml(s) {
+            const rawType = s.type || 'Internet Source';
+            let typeName = 'Internet';
+            if (rawType.toLowerCase().includes('publication')) typeName = 'Publication';
+            else if (rawType.toLowerCase().includes('student')) typeName = 'Submitted works';
+
+            const solidColor = (s.color && s.color.solid) ? s.color.solid : '#2563eb';
+            const bgColor = (s.color && s.color.bg) ? s.color.bg : 'rgba(37, 99, 235, 0.15)';
+
+            return `
+                <div class="source-list-row">
+                    <div class="source-row-left">
+                        <div class="source-badge-pill" style="background: ${bgColor}; border: 1px solid ${solidColor}44;">
+                            <span class="source-num-badge" style="background: ${solidColor};">${s.source_num}</span>
+                            <span class="source-type-text" style="color: ${solidColor};">${typeName}</span>
+                        </div>
+                        <div class="source-row-name">${s.source_name || s.title}</div>
+                    </div>
+                    <div class="source-row-pct">${s.similarity_pct || '<1%'}</div>
+                </div>
+            `;
+        }
+
+        function updateOverviewPageTags(totalReportPages, hasP4) {
+            const p1Tag = `Page 1 of ${totalReportPages} • Cover Page`;
+            const p2Tag = `Page 2 of ${totalReportPages} • Integrity Overview`;
+            const p3Tag = `Page 3 of ${totalReportPages} • Integrity Overview`;
+            const subMeta = `Submission ID: ${currentSubId} • ${currentShortDate}`;
+            const subMetaSimple = `Submission ID: ${currentSubId}`;
+
+            const elH1 = document.getElementById('repHeaderPageTag1'); if (elH1) elH1.innerText = p1Tag;
+            const elF1 = document.getElementById('repFooterPageTag1'); if (elF1) elF1.innerText = p1Tag;
+            const elHS1 = document.getElementById('repHeaderSubMeta1'); if (elHS1) elHS1.innerText = subMeta;
+            const elFS1 = document.getElementById('repFooterSubMeta1'); if (elFS1) elFS1.innerText = subMetaSimple;
+
+            const elH2 = document.getElementById('repHeaderPageTag2'); if (elH2) elH2.innerText = p2Tag;
+            const elF2 = document.getElementById('repFooterPageTag2'); if (elF2) elF2.innerText = p2Tag;
+            const elHS2 = document.getElementById('repHeaderSubMeta2'); if (elHS2) elHS2.innerText = subMeta;
+            const elFS2 = document.getElementById('repFooterSubMeta2'); if (elFS2) elFS2.innerText = subMetaSimple;
+
+            const elH3 = document.getElementById('repHeaderPageTag3'); if (elH3) elH3.innerText = p3Tag;
+            const elF3 = document.getElementById('repFooterPageTag3'); if (elF3) elF3.innerText = p3Tag;
+            const elHS3 = document.getElementById('repHeaderSubMeta3'); if (elHS3) elHS3.innerText = subMeta;
+            const elFS3 = document.getElementById('repFooterSubMeta3'); if (elFS3) elFS3.innerText = subMetaSimple;
+
+            if (hasP4) {
+                const p4Tag = `Page 4 of ${totalReportPages} • Integrity Overview`;
+                const elH4 = document.getElementById('repHeaderPageTag4'); if (elH4) elH4.innerText = p4Tag;
+                const elF4 = document.getElementById('repFooterPageTag4'); if (elF4) elF4.innerText = p4Tag;
+                const elHS4 = document.getElementById('repHeaderSubMeta4'); if (elHS4) elHS4.innerText = subMeta;
+                const elFS4 = document.getElementById('repFooterSubMeta4'); if (elFS4) elFS4.innerText = subMetaSimple;
+            }
+        }
+
+        function syncLembarHasilData(data) {
+            const now = new Date();
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const d = now.getDate();
+            const m = monthNames[now.getMonth()];
+            const y = now.getFullYear();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            currentFullDateTime = `${m} ${d}, ${y}, ${hours}:${minutes} ${ampm} GMT+7`;
+            currentShortDate = `${d}-${m}-${y}`;
+            const subNum = "2" + Math.floor(100000000 + Math.random() * 900000000);
+            currentSubId = subNum;
+
+            const fileSizeStr = selectedFile ? `${(selectedFile.size / (1024 * 1024)).toFixed(2)} MB` : `${((data.total_words * 5.8) / (1024 * 1024)).toFixed(2)} MB`;
+
+            // Template (Report Multi-Page Cover & Details)
+            const elDocTitle = document.getElementById('repDocTitle'); if (elDocTitle) elDocTitle.innerText = (data.filename || '').replace(/\.(pdf|docx|doc)$/i, '');
+            const elFileName = document.getElementById('repFileName'); if (elFileName) elFileName.innerText = data.filename;
+            const elSubId = document.getElementById('repSubId'); if (elSubId) elSubId.innerText = currentSubId;
+            const elDate = document.getElementById('repDateText'); if (elDate) elDate.innerText = currentFullDateTime;
+            const elDown = document.getElementById('repDownloadDate'); if (elDown) elDown.innerText = currentFullDateTime;
+            const elFileSize = document.getElementById('repFileSizeText'); if (elFileSize) elFileSize.innerText = fileSizeStr;
+            const elWord = document.getElementById('repWordText'); if (elWord) elWord.innerText = (data.total_words || 0).toLocaleString();
+            const elChar = document.getElementById('repCharText'); if (elChar) elChar.innerText = Math.round((data.total_words || 0) * 6.5).toLocaleString();
+            const elPages = document.getElementById('repPageCountText'); if (elPages) elPages.innerText = data.total_pages || totalPdfPages;
+
+            // Page 2 Metrics
+            const elScore = document.getElementById('repScoreVal'); if (elScore) elScore.innerText = `${data.similarity_score}%`;
+            const elNet = document.getElementById('repNetScore'); if (elNet) elNet.innerText = `${data.internet_sources_pct}%`;
+            const elPub = document.getElementById('repPubScore'); if (elPub) elPub.innerText = `${data.publications_pct}%`;
+            const elStu = document.getElementById('repStuScore'); if (elStu) elStu.innerText = `${data.student_papers_pct}%`;
+
+            // Page 3 Metrics
+            const elNet2 = document.getElementById('repNetScore2'); if (elNet2) elNet2.innerText = `${data.internet_sources_pct}%`;
+            const elPub2 = document.getElementById('repPubScore2'); if (elPub2) elPub2.innerText = `${data.publications_pct}%`;
+            const elStu2 = document.getElementById('repStuScore2'); if (elStu2) elStu2.innerText = `${data.student_papers_pct}%`;
+
+            // Top Sources Distribution
+            const sources = data.sources || [];
+            const sourcesP3 = sources.slice(0, 10);
+            const sourcesP4 = sources.slice(10);
+
+            const elListP3 = document.getElementById('repSourcesListP3');
+            if (elListP3) {
+                elListP3.innerHTML = sourcesP3.map(s => renderSourceItemHtml(s)).join('');
+            }
+
+            const p4El = document.getElementById('report-page-4');
+            const elListP4 = document.getElementById('repSourcesListP4');
+            if (sourcesP4.length > 0) {
+                if (p4El) {
+                    p4El.style.display = 'flex';
+                    p4El.classList.remove('hidden-page');
+                }
+                if (elListP4) {
+                    elListP4.innerHTML = sourcesP4.map(s => renderSourceItemHtml(s)).join('');
+                }
+            } else {
+                if (p4El) {
+                    p4El.style.display = 'none';
+                    p4El.classList.add('hidden-page');
+                }
+                if (elListP4) elListP4.innerHTML = '';
+            }
+        }
+
+        function populateReportManuscriptPages() {
+            const reportContainer = document.getElementById('reportPagesContainer');
+            if (!reportContainer) return;
+
+            // Reuse if already populated for this submission
+            if (reportContainer.children.length > 0 && reportContainer.dataset.renderedSubId === currentSubId) {
+                return;
+            }
+
+            // Free previous canvas VRAM memory
+            reportContainer.querySelectorAll('canvas').forEach(c => {
+                c.width = 0;
+                c.height = 0;
+            });
+            reportContainer.innerHTML = "";
+            reportContainer.dataset.renderedSubId = currentSubId;
+
+            const pageContainers = document.querySelectorAll('#pdfContainer .pdf-page-container');
+            if (!pageContainers || pageContainers.length === 0) return;
+
+            const sources = currentReportData ? (currentReportData.sources || []) : [];
+            const hasP4 = sources.length > 10;
+            const numOverviewPages = hasP4 ? 4 : 3;
+            const totalReportPages = numOverviewPages + pageContainers.length;
+
+            updateOverviewPageTags(totalReportPages, hasP4);
+
+            pageContainers.forEach((pCont, idx) => {
+                const reportPageNum = numOverviewPages + idx + 1;
+                const pageWrapper = document.createElement('div');
+                pageWrapper.className = 'report-manuscript-page';
+
+                const headerEl = document.createElement('div');
+                headerEl.className = 'ithenticate-sheet-header';
+                headerEl.innerHTML = `
+                    <div class="header-left">
+                        <svg class="header-logo-icon" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span class="header-brand-name">pgsd.plagcheker</span>
+                        <span class="header-page-tag">Page ${reportPageNum} of ${totalReportPages} • Manuscript</span>
+                    </div>
+                    <div class="header-right">
+                        <span>Submission ID: ${currentSubId} • ${currentShortDate}</span>
+                    </div>
+                `;
+                pageWrapper.appendChild(headerEl);
+
+                const canvasWrap = document.createElement('div');
+                canvasWrap.className = 'report-canvas-wrapper';
+
+                const baseCanvas = pCont.querySelector('canvas');
+                const origHighlightLayer = pCont.querySelector('.turnitin-highlight-layer');
+                const origTextLayer = pCont.querySelector('.textLayer');
+
+                if (baseCanvas && baseCanvas.width > 0 && baseCanvas.height > 0) {
+                    const cssW = baseCanvas.style.width ? parseFloat(baseCanvas.style.width) : (pCont.clientWidth || baseCanvas.width);
+                    const cssH = baseCanvas.style.height ? parseFloat(baseCanvas.style.height) : (pCont.clientHeight || baseCanvas.height);
+
+                    const pageBox = document.createElement('div');
+                    pageBox.className = 'pdf-page-container report-page-box';
+                    pageBox.style.width = `${cssW}px`;
+                    pageBox.style.height = `${cssH}px`;
+                    const printScale = Math.min(730 / cssW, 980 / cssH, 1.0);
+                    pageBox.style.setProperty('--print-scale', printScale.toFixed(4));
+
+                    const cloneCanvas = document.createElement('canvas');
+                    cloneCanvas.width = baseCanvas.width;
+                    cloneCanvas.height = baseCanvas.height;
+                    cloneCanvas.style.width = `${cssW}px`;
+                    cloneCanvas.style.height = `${cssH}px`;
+                    cloneCanvas.style.display = 'block';
+                    cloneCanvas.style.pointerEvents = 'none';
+                    cloneCanvas.getContext('2d').drawImage(baseCanvas, 0, 0);
+                    pageBox.appendChild(cloneCanvas);
+
+                    if (origHighlightLayer) {
+                        const hlClone = origHighlightLayer.cloneNode(true);
+                        hlClone.className = 'turnitin-highlight-layer';
+                        hlClone.style.width = `${cssW}px`;
+                        hlClone.style.height = `${cssH}px`;
+                        pageBox.appendChild(hlClone);
+                    }
+
+                    if (origTextLayer) {
+                        const textLayerClone = origTextLayer.cloneNode(true);
+                        textLayerClone.className = 'textLayer';
+                        textLayerClone.style.setProperty('--scale-factor', origTextLayer.style.getPropertyValue('--scale-factor') || currentScale);
+                        textLayerClone.style.width = `${cssW}px`;
+                        textLayerClone.style.height = `${cssH}px`;
+                        textLayerClone.style.position = 'absolute';
+                        textLayerClone.style.left = '0';
+                        textLayerClone.style.top = '0';
+                        textLayerClone.style.right = '0';
+                        textLayerClone.style.bottom = '0';
+                        textLayerClone.style.pointerEvents = 'auto';
+                        textLayerClone.style.userSelect = 'text';
+                        textLayerClone.style.webkitUserSelect = 'text';
+                        pageBox.appendChild(textLayerClone);
+                    }
+
+                    canvasWrap.appendChild(pageBox);
+                    pageWrapper.appendChild(canvasWrap);
+                    reportContainer.appendChild(pageWrapper);
+                }
+            });
+        }
+
+        function openLembarModal() {
+            populateReportManuscriptPages();
+            document.getElementById('lembarModal').style.display = 'flex';
+        }
+
+        function closeLembarModal() {
+            document.getElementById('lembarModal').style.display = 'none';
+        }
+
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('lembarModal');
+            if (e.target === modal) closeLembarModal();
+        });
+
+        // PDF Rendering Logic
+        async function renderPdfPages(pdfUrl, pageMatches) {
+            const container = document.getElementById('pdfContainer');
+            // Clean up previous canvas VRAM memory
+            container.querySelectorAll('canvas').forEach(c => {
+                c.width = 0;
+                c.height = 0;
+            });
+            container.innerHTML = "";
+
+            const loadingTask = pdfjsLib.getDocument(pdfUrl);
+            const pdf = await loadingTask.promise;
+            totalPdfPages = pdf.numPages;
+            document.getElementById('pageIndicator').innerText = `Page 1 / ${totalPdfPages}`;
+
+            // 1.5x gives crystal-clear HD resolution without eating gigabytes of RAM
+            const outputScale = Math.min(window.devicePixelRatio || 1, 1.5);
+
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                const viewport = page.getViewport({ scale: currentScale });
+
+                const pageWrapper = document.createElement('div');
+                pageWrapper.className = 'pdf-page-container';
+                pageWrapper.id = `pdf-page-${pageNum}`;
+                pageWrapper.style.width = `${viewport.width}px`;
+                pageWrapper.style.height = `${viewport.height}px`;
+                container.appendChild(pageWrapper); // Attached immediately to DOM for accurate offset measurements
+
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = Math.floor(viewport.width * outputScale);
+                canvas.height = Math.floor(viewport.height * outputScale);
+                canvas.style.width = `${viewport.width}px`;
+                canvas.style.height = `${viewport.height}px`;
+                context.imageSmoothingEnabled = true;
+                context.imageSmoothingQuality = 'high';
+                pageWrapper.appendChild(canvas);
+
+                await page.render({
+                    canvasContext: context,
+                    transform: outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null,
+                    viewport: viewport
+                }).promise;
+
+                // Dedicated highlight layer for clean, straight rectangular bars and pin badges
+                const highlightLayer = document.createElement('div');
+                highlightLayer.className = 'turnitin-highlight-layer';
+                highlightLayer.style.width = `${viewport.width}px`;
+                highlightLayer.style.height = `${viewport.height}px`;
+                pageWrapper.appendChild(highlightLayer);
+
+                // Text Layer overlay (enables text selection, cursor blocking, copying)
+                const textLayerDiv = document.createElement('div');
+                textLayerDiv.className = 'textLayer';
+                textLayerDiv.style.setProperty('--scale-factor', viewport.scale);
+                textLayerDiv.style.width = `${viewport.width}px`;
+                textLayerDiv.style.height = `${viewport.height}px`;
+                pageWrapper.appendChild(textLayerDiv);
+
+                const textContent = await page.getTextContent();
+                try {
+                    await pdfjsLib.renderTextLayer({
+                        textContentSource: textContent,
+                        container: textLayerDiv,
+                        viewport: viewport
+                    }).promise;
+                } catch (e) {
+                    console.warn("Text layer render error:", e);
+                }
+
+                const pageData = pageMatches ? pageMatches[pageNum - 1] : null;
+
+                if (pageData && pageData.matches && pageData.matches.length > 0) {
+                    const pageRect = pageWrapper.getBoundingClientRect();
+                    const getSpanVisualRect = s => {
+                        if (s.firstChild && s.firstChild.nodeType === Node.TEXT_NODE) {
+                            const text = s.firstChild.textContent;
+                            const trimmedRight = text.trimEnd().length;
+                            const leading = text.length - text.trimStart().length;
+                            if (trimmedRight > leading) {
+                                const range = document.createRange();
+                                range.setStart(s.firstChild, leading);
+                                range.setEnd(s.firstChild, trimmedRight);
+                                const rRect = range.getBoundingClientRect();
+                                if (rRect.width > 0 && rRect.height > 0) {
+                                    return {
+                                        left: rRect.left - pageRect.left,
+                                        right: rRect.right - pageRect.left,
+                                        top: rRect.top - pageRect.top,
+                                        bottom: rRect.bottom - pageRect.top
+                                    };
+                                }
+                            }
+                        }
+                        const rect = s.getBoundingClientRect();
+                        return {
+                            left: rect.left - pageRect.left,
+                            right: rect.right - pageRect.left,
+                            top: rect.top - pageRect.top,
+                            bottom: rect.bottom - pageRect.top
+                        };
+                    };
+
+                    const normChar = c => {
+                        const code = c.charCodeAt(0);
+                        if ((code >= 48 && code <= 57) || (code >= 97 && code <= 122)) return c;
+                        if (code >= 65 && code <= 90) return String.fromCharCode(code + 32);
+                        return '';
+                    };
+
+                    let fullPageNorm = '';
+                    const charToItemIdx = [];
+                    textContent.items.forEach((it, itIdx) => {
+                        if (!it.str) return;
+                        for (let i = 0; i < it.str.length; i++) {
+                            const nc = normChar(it.str[i]);
+                            if (nc) {
+                                fullPageNorm += nc;
+                                charToItemIdx.push(itIdx);
+                            }
+                        }
+                    });
+
+                    let lastBadgedSource = null;
+                    let lastBadgeItemIdx = -999;
+
+                    pageData.matches.forEach(m => {
+                        if (!m.phrase) return;
+                        let cleanPhrase = '';
+                        for (let i = 0; i < m.phrase.length; i++) {
+                            const nc = normChar(m.phrase[i]);
+                            if (nc) cleanPhrase += nc;
+                        }
+                        if (cleanPhrase.length < 6) return;
+
+                        let matchStart = fullPageNorm.indexOf(cleanPhrase);
+                        let matchEnd = -1;
+
+                        if (matchStart !== -1) {
+                            matchEnd = matchStart + cleanPhrase.length;
+                        } else if (cleanPhrase.length > 25) {
+                            const chunkLen = Math.min(cleanPhrase.length, Math.max(20, Math.floor(cleanPhrase.length * 0.75)));
+                            for (let offset = 0; offset <= cleanPhrase.length - chunkLen; offset += 10) {
+                                const sub = cleanPhrase.substr(offset, chunkLen);
+                                const found = fullPageNorm.indexOf(sub);
+                                if (found !== -1) {
+                                    matchStart = found;
+                                    matchEnd = found + chunkLen;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (matchStart !== -1 && matchEnd > matchStart) {
+                            const itemIndicesInMatch = [];
+                            const seenItems = new Set();
+                            for (let i = matchStart; i < matchEnd; i++) {
+                                const itemIdx = charToItemIdx[i];
+                                if (itemIdx !== undefined && !seenItems.has(itemIdx)) {
+                                    seenItems.add(itemIdx);
+                                    itemIndicesInMatch.push(itemIdx);
+                                }
+                            }
+
+                            if (itemIndicesInMatch.length === 0) return;
+
+                            const colorRgba = m.color ? hexToRgba(m.color, 0.32) : 'rgba(219, 39, 119, 0.32)';
+                            const isContinuation = (m.source_num === lastBadgedSource) && (Math.abs(itemIndicesInMatch[0] - lastBadgeItemIdx) <= 2);
+
+                            // Group spans on the same visual line to make single unbroken straight highlight bars
+                            const lines = [];
+                            let currentLine = [];
+
+                            itemIndicesInMatch.forEach(itemIdx => {
+                                const span = textLayerDiv.children[itemIdx];
+                                if (!span || span.tagName !== 'SPAN') return;
+                                const vRect = getSpanVisualRect(span);
+                                if (vRect.right <= vRect.left) return;
+
+                                if (currentLine.length === 0) {
+                                    currentLine.push(span);
+                                } else {
+                                    const prevSpan = currentLine[currentLine.length - 1];
+                                    const prevVRect = getSpanVisualRect(prevSpan);
+                                    const prevMid = (prevVRect.top + prevVRect.bottom) / 2;
+                                    const currMid = (vRect.top + vRect.bottom) / 2;
+                                    const maxH = Math.max(prevVRect.bottom - prevVRect.top, vRect.bottom - vRect.top, 10);
+                                    if (Math.abs(currMid - prevMid) < maxH * 0.55) {
+                                        currentLine.push(span);
+                                    } else {
+                                        lines.push(currentLine);
+                                        currentLine = [span];
+                                    }
+                                }
+                            });
+                            if (currentLine.length > 0) lines.push(currentLine);
+
+                            lines.forEach((lineSpans, lineIdx) => {
+                                let minX = Infinity;
+                                let maxX = -Infinity;
+                                let minY = Infinity;
+                                let maxY = -Infinity;
+
+                                lineSpans.forEach(s => {
+                                    const vRect = getSpanVisualRect(s);
+                                    if (vRect.left < minX) minX = vRect.left;
+                                    if (vRect.right > maxX) maxX = vRect.right;
+                                    if (vRect.top < minY) minY = vRect.top;
+                                    if (vRect.bottom > maxY) maxY = vRect.bottom;
+                                });
+
+                                if (maxX > minX && maxY > minY) {
+                                    const bar = document.createElement('div');
+                                    bar.className = 'turnitin-highlight-bar';
+                                    bar.style.left = `${Math.round(minX)}px`;
+                                    bar.style.top = `${Math.round(minY)}px`;
+                                    bar.style.width = `${Math.round(maxX - minX)}px`;
+                                    bar.style.height = `${Math.round(maxY - minY)}px`;
+                                    bar.style.backgroundColor = colorRgba;
+                                    highlightLayer.appendChild(bar);
+
+                                    // Badge on first line only
+                                    if (lineIdx === 0 && !isContinuation) {
+                                        const badge = document.createElement('div');
+                                        badge.className = 'turnitin-pin-badge';
+                                        badge.innerText = m.source_num;
+                                        badge.style.backgroundColor = m.color || '#db2777';
+                                        badge.style.left = `${Math.max(0, Math.round(minX))}px`;
+                                        badge.style.top = `${Math.max(0, Math.round(minY - 12))}px`;
+                                        highlightLayer.appendChild(badge);
+
+                                        lastBadgedSource = m.source_num;
+                                        lastBadgeItemIdx = itemIndicesInMatch[0];
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // Cooperative yield to keep browser UI smooth and responsive (prevent laptop lag)
+                await new Promise(r => setTimeout(r, 12));
+            }
+
+            populateReportManuscriptPages();
+        }
+
+        async function adjustZoom(delta) {
+            currentScale = Math.max(0.75, Math.min(2.5, currentScale + delta));
+            document.getElementById('zoomPercent').innerText = `${Math.round(currentScale * 100)}%`;
+            if (currentReportData) {
+                await renderPdfPages(currentReportData.pdf_url, currentReportData.page_matches);
+                populateReportManuscriptPages();
+            }
+        }
+
+        async function resetZoom() {
+            currentScale = 1.35;
+            document.getElementById('zoomPercent').innerText = "135%";
+            if (currentReportData) {
+                await renderPdfPages(currentReportData.pdf_url, currentReportData.page_matches);
+                populateReportManuscriptPages();
+            }
+        }
+
+        function nextPage() {
+            if (currentPageNum < totalPdfPages) {
+                currentPageNum++;
+                scrollToPage(currentPageNum);
+            }
+        }
+
+        function prevPage() {
+            if (currentPageNum > 1) {
+                currentPageNum--;
+                scrollToPage(currentPageNum);
+            }
+        }
+
+        function scrollToPage(pNum) {
+            document.getElementById('pageIndicator').innerText = `Page ${pNum} / ${totalPdfPages}`;
+            const target = document.getElementById(`pdf-page-${pNum}`);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function highlightSource(srcNum) {
+            const pageData = currentReportData.page_matches;
+            for (let i = 0; i < pageData.length; i++) {
+                if (pageData[i].matches.some(m => m.source_num === srcNum)) {
+                    scrollToPage(i + 1);
+                    break;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
